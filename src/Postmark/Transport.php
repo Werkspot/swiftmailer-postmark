@@ -95,8 +95,9 @@ class Transport implements Swift_Transport {
 		]);
 
 		$success = $response->getStatusCode() === 200;
+		$received = $success || $response->getStatusCode() === 406; // 406: Inactive recipient
 
-		if ($responseEvent = $this->_eventDispatcher->createResponseEvent($this, $response->getBody()->getContents(), $success)) {
+		if ($responseEvent = $this->_eventDispatcher->createResponseEvent($this, $response->getBody()->getContents(), $received)) {
 			$this->_eventDispatcher->dispatchEvent($responseEvent, 'responseReceived');
 		}
 
