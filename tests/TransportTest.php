@@ -160,6 +160,17 @@ class MailPostmarkTransportTest extends TestCase {
         $this->expectException(\Swift_TransportException::class);
         $transport->send($message);
     }
+
+    public function testResponseDoesNotFailOn406()
+    {
+        $message = new Swift_Message();
+        $message->addTo('you@example.com', 'A. Friend');
+
+        $transport = new PostmarkTransportStub([new Response(406)]);
+        $transport->registerPlugin(new \Postmark\ThrowExceptionOnFailurePlugin());
+
+        $this->assertSame(0, $transport->send($message));
+    }
 }
 
 
