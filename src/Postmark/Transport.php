@@ -10,7 +10,23 @@ use Swift_Transport;
 
 class Transport implements Swift_Transport {
 
-	protected $version = "Unknown PHP version";
+    /**
+     * 406 — Inactive recipient You tried to send email to a recipient that has
+     * been marked as inactive. Inactive recipients have either generated a
+     * hard bounce or a spam complaint. In this case, only hard bounce recipients
+     * can be reactivated by searching for them on your server’s Activity page and
+     * clicking the “Reactivate” button.
+     */
+    private const ERROR_CODE_INACTIVE_RECIPIENT = 406;
+
+    /**
+     * Whenever the Postmark server detects an input error it will return an
+     * HTTP 422 status code along with a JSON object containing error details
+     */
+    private const STATUS_CODE_CLIENT_ERROR = 422;
+    private const STATUS_CODE_OK = 200;
+
+    protected $version = "Unknown PHP version";
 	protected $os = "Unknown OS";
 
 	/**
@@ -102,10 +118,14 @@ class Transport implements Swift_Transport {
 			'http_errors' => false,
 		]);
 
-		$success = $response->getStatusCode() === 200;
-		$received = $success || $response->getStatusCode() === 406; // 406: Inactive recipient
+		$success = $response->getStatusCode() === self::STATUS_CODE_OK;
+		$clientError = $response->getStatusCode() === self::STATUS_CODE_CLIENT_ERROR;
 
-		if ($responseEvent = $this->_eventDispatcher->createResponseEvent($this, $response->getBody()->__toString(), $received)) {
+        $responseBody = json_decode($response->getBody()->getContents(), true);
+        $errorCode = (int) $responseBody['ErrorCode'] ?? 0;
+        $validResponse = $success || ($clientError && $errorCode === self::ERROR_CODE_INACTIVE_RECIPIENT);
+
+		if ($responseEvent = $this->_eventDispatcher->createResponseEvent($this, $response->getBody()->__toString(), $validResponse)) {
 			$this->_eventDispatcher->dispatchEvent($responseEvent, 'responseReceived');
 		}
 
