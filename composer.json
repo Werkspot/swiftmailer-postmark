@@ -6,6 +6,8 @@
     "name": "wildbit/swiftmailer-postmark",
     "description": "A Swiftmailer Transport for Postmark.",
     "require": {
+        "php" : "^7.1",
+        "ext-json": "*",
         "swiftmailer/swiftmailer": "^6.0.0",
         "guzzlehttp/guzzle": "^6.0|^7.0"
     },

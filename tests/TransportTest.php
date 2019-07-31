@@ -154,7 +154,7 @@ class MailPostmarkTransportTest extends TestCase {
     {
         $message = new Swift_Message();
 
-        $transport = new PostmarkTransportStub([new Response(401)]);
+        $transport = new PostmarkTransportStub([new Response(422, [], '{"ErrorCode": 10, "Message": "wrong token"}')]);
         $transport->registerPlugin(new \Postmark\ThrowExceptionOnFailurePlugin());
 
         $this->expectException(\Swift_TransportException::class);
@@ -220,7 +220,7 @@ class MailPostmarkTransportTest extends TestCase {
         $message = new Swift_Message();
         $message->addTo('you@example.com', 'A. Friend');
 
-        $transport = new PostmarkTransportStub([new Response(406)]);
+        $transport = new PostmarkTransportStub([new Response(422, [], '{"ErrorCode": 406, "Message": "message"}')]);
         $transport->registerPlugin(new \Postmark\ThrowExceptionOnFailurePlugin());
 
         $this->assertSame(0, $transport->send($message));
