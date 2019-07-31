@@ -48,7 +48,7 @@ $transport = new \Postmark\Transport('<SERVER_TOKEN>');
 $transport->registerPlugin(new \Postmark\ThrowExceptionOnFailurePlugin());
 
 $message = new Swift_Message('Hello from Postmark!');
-$mailer->send($message); // Exception is throw when response !== 200
+$mailer->send($message); // Exception is throw when response is not 200
 
 ?>
 ```
