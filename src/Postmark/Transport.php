@@ -125,7 +125,8 @@ class Transport implements Swift_Transport {
         $errorCode = (int) $responseBody['ErrorCode'] ?? 0;
         $validResponse = $success || ($clientError && $errorCode === self::ERROR_CODE_INACTIVE_RECIPIENT);
 
-		if ($responseEvent = $this->_eventDispatcher->createResponseEvent($this, $response->getBody()->__toString(), $validResponse)) {
+        $responseString = sprintf('[%d] %s', $response->getStatusCode(), $response->getBody()->__toString());
+        if ($responseEvent = $this->_eventDispatcher->createResponseEvent($this, $responseString, $validResponse)) {
 			$this->_eventDispatcher->dispatchEvent($responseEvent, 'responseReceived');
 		}
 
