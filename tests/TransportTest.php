@@ -156,12 +156,14 @@ class MailPostmarkTransportTest extends TestCase {
 
     public function testFailedResponse()
     {
-        $message = new Swift_Message();
+        $message = new Swift_Message('subject1');
+        $message->addTo('email@example.com', 'Email Example');
 
-        $transport = new PostmarkTransportStub([new Response(422, [], '{"ErrorCode": 10, "Message": "wrong token"}')]);
+        $transport = new PostmarkTransportStub([new Response(422, ['foo' => 'bar'], '{"ErrorCode": 10, "Message": "wrong token"}')]);
         $transport->registerPlugin(new \Postmark\ThrowExceptionOnFailurePlugin());
 
         $this->expectException(\Swift_TransportException::class);
+        $this->expectExceptionMessage('{"http_status_code":422,"error_code":10,"reason":"Unprocessable Entity","headers":{"foo":["bar"]},"body":{"ErrorCode":10,"Message":"wrong token"},"recipient":{"email@example.com":"Email Example"},"subject":"subject1"}');
         $transport->send($message);
     }
 
