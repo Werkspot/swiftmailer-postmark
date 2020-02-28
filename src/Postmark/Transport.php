@@ -104,7 +104,8 @@ class Transport implements Swift_Transport {
 
 		$success = $response->getStatusCode() === 200;
 
-		if ($responseEvent = $this->_eventDispatcher->createResponseEvent($this, $response->getBody()->__toString(), $success)) {
+        $responseString = sprintf('[%d] %s', $response->getStatusCode(), $response->getBody()->__toString());
+        if ($responseEvent = $this->_eventDispatcher->createResponseEvent($this, $responseString, $success)) {
 			$this->_eventDispatcher->dispatchEvent($responseEvent, 'responseReceived');
 		}
 
