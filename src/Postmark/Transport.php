@@ -7,6 +7,7 @@ use Swift_Events_EventListener;
 use Swift_Mime_MimePart;
 use Swift_Mime_SimpleMessage;
 use Swift_Transport;
+use function is_array;
 
 class Transport implements Swift_Transport {
 
@@ -122,7 +123,7 @@ class Transport implements Swift_Transport {
 		$clientError = $response->getStatusCode() === self::STATUS_CODE_CLIENT_ERROR;
 
         $responseBody = json_decode($response->getBody()->__toString(), true);
-        $errorCode = (int) $responseBody['ErrorCode'] ?? 0;
+        $errorCode = isset($responseBody['ErrorCode']) ? (int) $responseBody['ErrorCode'] : 0;
         $validResponse = $success || ($clientError && $errorCode === self::ERROR_CODE_INACTIVE_RECIPIENT);
 
         $responseData = [

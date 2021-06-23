@@ -31,7 +31,7 @@ class TransportGuzzleStreamConsumptionTest extends TestCase
 
         $this->assertNotNull($exception);
         $this->assertInstanceOf(Swift_TransportException::class, $exception);
-        $this->assertSame('Some error from server', $exception->getMessage());
+        $this->assertSame('{"http_status_code":422,"error_code":0,"reason":"Unprocessable Entity","headers":[],"body":null,"recipient":null,"subject":null}', $exception->getMessage());
     }
 
     public function testSendWithMiddleware()
@@ -55,7 +55,7 @@ class TransportGuzzleStreamConsumptionTest extends TestCase
 
         // This would fail if \Postmark\Transport::send would use
         // getBody->getContents() instead of getBody->__toString()
-        $this->assertSame('Some error from server', $exception->getMessage());
+        $this->assertSame('{"http_status_code":422,"error_code":0,"reason":"Unprocessable Entity","headers":[],"body":null,"recipient":null,"subject":null}', $exception->getMessage());
     }
 }
 
